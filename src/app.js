@@ -1,11 +1,27 @@
 const express = require("express");
 const app = express();
+const connectDB = require("./config/database");
+const User = require('./models/user');
 
-app.use("/test", (req, res) => {
-    res.send("Curious test");
-});
-app.use("/", (req, res) => {
-    res.send("Here starts  Backend Learning");
+app.post("/signup", async (req, res) => {
+    const userObj = {
+        firstName: "Virat",
+        lastName: "Kohli",
+        emailID: "2023ucp1678@mnit.ac.in",
+        password: "Khush@123",
+    }
+    const user = new User(userObj);
+    await user.save();
+    res.send("User added successfully!!!");
 });
 
-app.listen(7777);
+connectDB().
+    then(() => {
+        console.log("DB connected successfully");
+        app.listen(7777, () => {
+            console.log("Listening to port 7777...");
+        });
+    }).
+    catch((err) => {
+        console.error("DB connection failed");
+    });
