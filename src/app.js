@@ -11,8 +11,38 @@ app.post("/signup", async (req, res) => {
         res.send("User added successfully!!!");
     }
     catch (err) {
-        res.status(404).send("Errors");
-        console.error("Error");
+        res.status(400).send("User not added " + err.message);
+    }
+});
+app.get("/feed", async (req, res) => {
+    try {
+        const user = await User.find({});
+        res.send(user);
+    }
+    catch (err) {
+        res.status(400).send("Something went wrong");
+    }
+
+});
+app.patch("/user/:userId", async (req, res) => {
+    const data = req.body;
+    try {
+        const updatesAllowed = ["gender", "photoURL", "skills", "about"];
+
+        if (!data.every((k) => updatesAllowed.includes(k))) {
+            throw new Error("Update not allowed");
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(userId, req.body,
+            {
+                returnDocument: "after",
+                runValidators: true
+            }
+        );
+        res.send(updatedUser);
+    }
+    catch (err) {
+        res.status(400).send("Something went wrong" + err.message);
     }
 
 });
